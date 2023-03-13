@@ -1,193 +1,231 @@
-import * as React from "react"
-import type { HeadFC, PageProps } from "gatsby"
+import  React,{useEffect,useState} from "react";
+import type { HeadFC, PageProps } from "gatsby";
+import Box from "@mui/material/Box";
+import Stepper from "@mui/material/Stepper";
+import Step from "@mui/material/Step";
+import StepLabel from "@mui/material/StepLabel";
+import Button from "@mui/material/Button";
+import PersonalInfo from "../components/personalInfo";
+import FileAttachment from "../components/fileAttachment";
+import PaypalPayment from "../components/paypalPayment";
+import { Formik } from "formik";
+import * as Yup from "yup";
+import "../styles/global.css";
+import logo from "../images/logo.png";
+import { Home } from "@mui/icons-material";
+import { db } from "../../firebase/initFirebase";
+import { collection, addDoc,getDoc, doc } from "firebase/firestore";
+import { Helmet } from "react-helmet";
+import CompletedForm from "../components/completedForm";
 
-const pageStyles = {
-  color: "#232129",
-  padding: 96,
-  fontFamily: "-apple-system, Roboto, sans-serif, serif",
-}
-const headingStyles = {
-  marginTop: 0,
-  marginBottom: 64,
-  maxWidth: 320,
-}
-const headingAccentStyles = {
-  color: "#663399",
-}
-const paragraphStyles = {
-  marginBottom: 48,
-}
-const codeStyles = {
-  color: "#8A6534",
-  padding: 4,
-  backgroundColor: "#FFF4DB",
-  fontSize: "1.25rem",
-  borderRadius: 4,
-}
-const listStyles = {
-  marginBottom: 96,
-  paddingLeft: 0,
-}
-const doclistStyles = {
-  paddingLeft: 0,
-}
-const listItemStyles = {
-  fontWeight: 300,
-  fontSize: 24,
-  maxWidth: 560,
-  marginBottom: 30,
-}
 
-const linkStyle = {
-  color: "#8954A8",
-  fontWeight: "bold",
-  fontSize: 16,
-  verticalAlign: "5%",
-}
+const steps = [
+  "Personal Information",
+  "Upload Documents",
+  "Payment & Checkout",
+];
 
-const docLinkStyle = {
-  ...linkStyle,
-  listStyleType: "none",
-  display: `inline-block`,
-  marginBottom: 24,
-  marginRight: 12,
-}
+const SignupSchema = Yup.object().shape({
+  firstName: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Required"),
+  lastName: Yup.string()
+    .min(2, "Too Short!")
+    .max(50, "Too Long!")
+    .required("Required"),
+  email: Yup.string().required("Required"),
+  phoneNumber: Yup.string().required("Required"),
+});
 
-const descriptionStyle = {
-  color: "#232129",
-  fontSize: 14,
-  marginTop: 10,
-  marginBottom: 0,
-  lineHeight: 1.25,
-}
-
-const docLinks = [
-  {
-    text: "TypeScript Documentation",
-    url: "https://www.gatsbyjs.com/docs/how-to/custom-configuration/typescript/",
-    color: "#8954A8",
-  },
-  {
-    text: "GraphQL Typegen Documentation",
-    url: "https://www.gatsbyjs.com/docs/how-to/local-development/graphql-typegen/",
-    color: "#8954A8",
-  }
-]
-
-const badgeStyle = {
-  color: "#fff",
-  backgroundColor: "#088413",
-  border: "1px solid #088413",
-  fontSize: 11,
-  fontWeight: "bold",
-  letterSpacing: 1,
-  borderRadius: 4,
-  padding: "4px 6px",
-  display: "inline-block",
-  position: "relative" as "relative",
-  top: -2,
-  marginLeft: 10,
-  lineHeight: 1,
-}
-
-const links = [
-  {
-    text: "Tutorial",
-    url: "https://www.gatsbyjs.com/docs/tutorial/",
-    description:
-      "A great place to get started if you're new to web development. Designed to guide you through setting up your first Gatsby site.",
-    color: "#E95800",
-  },
-  {
-    text: "How to Guides",
-    url: "https://www.gatsbyjs.com/docs/how-to/",
-    description:
-      "Practical step-by-step guides to help you achieve a specific goal. Most useful when you're trying to get something done.",
-    color: "#1099A8",
-  },
-  {
-    text: "Reference Guides",
-    url: "https://www.gatsbyjs.com/docs/reference/",
-    description:
-      "Nitty-gritty technical descriptions of how Gatsby works. Most useful when you need detailed information about Gatsby's APIs.",
-    color: "#BC027F",
-  },
-  {
-    text: "Conceptual Guides",
-    url: "https://www.gatsbyjs.com/docs/conceptual/",
-    description:
-      "Big-picture explanations of higher-level Gatsby concepts. Most useful for building understanding of a particular topic.",
-    color: "#0D96F2",
-  },
-  {
-    text: "Plugin Library",
-    url: "https://www.gatsbyjs.com/plugins",
-    description:
-      "Add functionality and customize your Gatsby site or app with thousands of plugins built by our amazing developer community.",
-    color: "#8EB814",
-  },
-  {
-    text: "Build and Host",
-    url: "https://www.gatsbyjs.com/cloud",
-    badge: true,
-    description:
-      "Now you’re ready to show the world! Give your Gatsby site superpowers: Build and host on Gatsby Cloud. Get started for free!",
-    color: "#663399",
-  },
-]
-
+const fileAttachSchema = Yup.object().shape({
+  photoGraph: Yup.mixed().required("Required"),
+  front: Yup.mixed().required("Required"),
+  back: Yup.mixed().required("Required"),
+});
 const IndexPage: React.FC<PageProps> = () => {
+  const [activeStep, setActiveStep] = React.useState(0);
+  const [completed, setCompleted] = React.useState<{
+    [k: number]: boolean;
+  }>({});
+  const [country, setCountry] = useState<any>();
+
+
+  useEffect(() => {
+    const getPost = async () => {
+      const postCol = doc(db, "user", "country") as any;
+      const postSnapshot = await getDoc(postCol);
+      const postList = postSnapshot.data();
+      // Set the result to the useState.
+      setCountry(postList);
+    };
+    // Call the async function.
+    getPost().catch(console.error);
+  }, []);
+
+
+
+
+
+  const handleBack = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep - 1);
+  };
+
   return (
-    <main style={pageStyles}>
-      <h1 style={headingStyles}>
-        Congratulations
-        <br />
-        <span style={headingAccentStyles}>— you just made a Gatsby site! 🎉🎉🎉</span>
-      </h1>
-      <p style={paragraphStyles}>
-        Edit <code style={codeStyles}>src/pages/index.tsx</code> to see this page
-        update in real-time. 😎
-      </p>
-      <ul style={doclistStyles}>
-        {docLinks.map(doc => (
-          <li key={doc.url} style={docLinkStyle}>
-            <a
-              style={linkStyle}
-              href={`${doc.url}?utm_source=starter&utm_medium=ts-docs&utm_campaign=minimal-starter-ts`}
-            >
-              {doc.text}
-            </a>
-          </li>
-        ))}
-      </ul>
-      <ul style={listStyles}>
-        {links.map(link => (
-          <li key={link.url} style={{ ...listItemStyles, color: link.color }}>
-            <span>
-              <a
-                style={linkStyle}
-                href={`${link.url}?utm_source=starter&utm_medium=start-page&utm_campaign=minimal-starter-ts`}
-              >
-                {link.text}
-              </a>
-              {link.badge && (
-                <span style={badgeStyle} aria-label="New Badge">
-                  NEW!
-                </span>
+    <>
+      <Helmet>
+        <html lang="en" />
+        <link
+          rel="apple-touch-icon"
+          sizes="180x180"
+          href="/apple-touch-icon.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="32x32"
+          href="/favicon-32x32.png"
+        />
+        <link
+          rel="icon"
+          type="image/png"
+          sizes="16x16"
+          href="/favicon-16x16.png"
+        />
+        <link rel="manifest" href="/site.webmanifest" />
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff"></meta>
+      </Helmet>
+      <Box
+        sx={{
+          width: "90%",
+        }}
+        className="ml-1 mt-1 md:ml-14 md:mt-8 flex flex-col md:flex-row"
+      >
+        <div className="ml-[50%] md:ml-0">
+          <a href="https://visabazar.com/">
+            <img src={logo as any} className="w-36 h-14" alt="Test" />
+          </a>
+        </div>
+        <div className="w-full">
+          <Stepper activeStep={activeStep} alternativeLabel>
+            {steps.map((label) => (
+              <Step key={label}>
+                <StepLabel>{label}</StepLabel>
+              </Step>
+            ))}
+          </Stepper>
+        </div>
+        <div className="hidden md:block">
+          <a href="https://visabazar.com/">
+            <Home className="text-5xl" />
+          </a>
+        </div>
+      </Box>
+
+      <div className="ml-8  w-4/5 lg:ml-24">
+        <Formik
+          enableReinitialize
+          initialValues={{
+            firstName: "",
+            lastName: "",
+            email: "",
+            phoneNumber: "",
+            country: country?.country,
+            photoGraph: "",
+            front: "",
+            back: "",
+          }}
+          validationSchema={activeStep === 1 ? fileAttachSchema : SignupSchema}
+          onSubmit={(values) => {
+            try {
+              addDoc(collection(db, "user"), {
+                firstName: values.firstName,
+                lastName: values.lastName,
+                email: values.email,
+                phoneNumber: values.phoneNumber,
+                country: values.country,
+                photoGraph: values.photoGraph,
+                front: values.front,
+                back: values.back,
+              });
+              setActiveStep(activeStep + 1);
+            } catch (e) {
+              console.error("Error adding document: ", e);
+            }
+          }}
+        >
+          {({
+            handleSubmit,
+            handleChange,
+            errors,
+            values,
+            setFieldValue,
+            error,
+          }: any) => (
+            <form className="mt-14" onSubmit={handleSubmit} noValidate>
+              {activeStep === 0 && (
+                <PersonalInfo
+                  handleChange={handleChange}
+                  errors={errors}
+                  values={values}
+                  setFieldValue={setFieldValue}
+                />
               )}
-              <p style={descriptionStyle}>{link.description}</p>
-            </span>
-          </li>
-        ))}
-      </ul>
-      <img
-        alt="Gatsby G Logo"
-        src="data:image/svg+xml,%3Csvg width='24' height='24' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M12 2a10 10 0 110 20 10 10 0 010-20zm0 2c-3.73 0-6.86 2.55-7.75 6L14 19.75c3.45-.89 6-4.02 6-7.75h-5.25v1.5h3.45a6.37 6.37 0 01-3.89 4.44L6.06 9.69C7 7.31 9.3 5.63 12 5.63c2.13 0 4 1.04 5.18 2.65l1.23-1.06A7.959 7.959 0 0012 4zm-8 8a8 8 0 008 8c.04 0 .09 0-8-8z' fill='%23639'/%3E%3C/svg%3E"
-      />
-    </main>
-  )
-}
+              {activeStep === 1 && (
+                <FileAttachment
+                  handleChange={handleChange}
+                  values={values}
+                  errors={errors}
+                  setFieldValue={setFieldValue}
+                  error={error}
+                />
+              )}
+              {activeStep === 2 && (
+                <PaypalPayment
+                  handleChange={handleChange}
+                  errors={errors}
+                  error={error}
+                />
+              )}
+              {activeStep > 2 && <CompletedForm />}
+              <Box className="mt-0 w-full md:mt-14 ">
+                <div>
+                  <React.Fragment>
+                    <Box sx={{ display: "flex", flexDirection: "row", pt: 2 }}>
+                      <Button
+                        color="inherit"
+                        variant="contained"
+                        disabled={activeStep === 0}
+                        onClick={handleBack}
+                        sx={{ mr: 1 }}
+                      >
+                        Back
+                      </Button>
 
-export default IndexPage
+                      <Box sx={{ flex: "1 1 auto" }} />
+                      {activeStep <= 2 && (
+                        <Button
+                          type="submit"
+                          variant="contained"
+                          sx={{ mr: 1 }}
+                        >
+                          {activeStep === 2 ? "Finish" : "Next"}
+                        </Button>
+                      )}
+                    </Box>
+                  </React.Fragment>
+                </div>
+              </Box>
+            </form>
+          )}
+        </Formik>
+      </div>
+    </>
+  );
+};
 
-export const Head: HeadFC = () => <title>Home Page</title>
+export default IndexPage;
+
+export const Head: HeadFC = () => <title>Home Page</title>;
