@@ -61,7 +61,15 @@ const PersonalInfo = ({ handleChange, errors, values, setFieldValue }: any) => {
             value={values.country}
             disabled
           />
-
+   <TextField
+            id="email"
+            type="text"
+            margin="dense"
+            variant="outlined"
+            fullWidth
+            value={values.visatype}
+            disabled
+          />
           <TextField
             id="email"
             label="Email *"

@@ -1,4 +1,4 @@
-import  React,{useEffect,useState} from "react";
+import React, { useEffect, useState } from "react";
 import type { HeadFC, PageProps } from "gatsby";
 import Box from "@mui/material/Box";
 import Stepper from "@mui/material/Stepper";
@@ -14,10 +14,15 @@ import "../styles/global.css";
 import logo from "../images/logo.png";
 import { Home } from "@mui/icons-material";
 import { db } from "../../firebase/initFirebase";
-import { collection, addDoc,getDoc, doc } from "firebase/firestore";
+import { collection, addDoc, getDoc, doc } from "firebase/firestore";
 import { Helmet } from "react-helmet";
 import CompletedForm from "../components/completedForm";
+import SteinStore from "stein-js-client";
+import { navigate } from "gatsby";
 
+const store = new SteinStore(
+  "https://api.steinhq.com/v1/storages/6417ffe8d27cdd09f0e9b539"
+);
 
 const steps = [
   "Personal Information",
@@ -48,24 +53,18 @@ const IndexPage: React.FC<PageProps> = () => {
   const [completed, setCompleted] = React.useState<{
     [k: number]: boolean;
   }>({});
-  const [country, setCountry] = useState<any>();
-
+  const [basicdata, setBasicData] = useState<any>();
 
   useEffect(() => {
-    const getPost = async () => {
-      const postCol = doc(db, "user", "country") as any;
-      const postSnapshot = await getDoc(postCol);
-      const postList = postSnapshot.data();
-      // Set the result to the useState.
-      setCountry(postList);
-    };
-    // Call the async function.
-    getPost().catch(console.error);
+    const urlParams = new URLSearchParams(window.location.search);
+    const encodedData = urlParams.get("data");
+    if (encodedData) {
+      // Decode the data
+      const decodedData = JSON.parse(atob(encodedData));
+      setBasicData(decodedData);
+      navigate("/");
+    }
   }, []);
-
-
-
-
 
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
@@ -132,7 +131,8 @@ const IndexPage: React.FC<PageProps> = () => {
             lastName: "",
             email: "",
             phoneNumber: "",
-            country: country?.country,
+            country: basicdata?.country,
+            visatype: basicdata?.visatype,
             photoGraph: "",
             front: "",
             back: "",
@@ -146,6 +146,7 @@ const IndexPage: React.FC<PageProps> = () => {
                 email: values.email,
                 phoneNumber: values.phoneNumber,
                 country: values.country,
+                visatype:values.visatype,
                 photoGraph: values.photoGraph,
                 front: values.front,
                 back: values.back,
@@ -154,6 +155,23 @@ const IndexPage: React.FC<PageProps> = () => {
             } catch (e) {
               console.error("Error adding document: ", e);
             }
+            store
+              .append("Sheet1", [
+                {
+                  firstName: values.firstName,
+                  lastName: values.lastName,
+                  email: values.email,
+                  phoneNumber: values.phoneNumber,
+                  country: values.country,
+                  visatype:values.visatype,
+                  photoGraph: values.photoGraph,
+                  front: values.front,
+                  back: values.back,
+                },
+              ])
+              .then((res: any) => {
+                console.log(res);
+              });
           }}
         >
           {({
