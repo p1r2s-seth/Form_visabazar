@@ -16,7 +16,7 @@ const CompletedForm = () => {
 
           <Typography align="center">
             We have received your visa request. Our visa specialist will connect
-            with you shortly.
+            with you very shortly.
           </Typography>
         </div>
         <div className="ml-[30%] mt-4 md:ml-[50%]">
