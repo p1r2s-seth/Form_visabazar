@@ -151,11 +151,8 @@ const IndexPage: React.FC<PageProps> = () => {
                 front: values.front,
                 back: values.back,
               });
-              setActiveStep(activeStep + 1);
-            } catch (e) {
-              console.error("Error adding document: ", e);
-            }
-            store
+
+              store
               .append("Sheet1", [
                 {
                   firstName: values.firstName,
@@ -169,9 +166,15 @@ const IndexPage: React.FC<PageProps> = () => {
                   back: values.back,
                 },
               ])
-              .then((res: any) => {
-                console.log(res);
-              });
+
+              setActiveStep(activeStep + 1);
+            } catch (e) {
+              console.error("Error adding document: ", e);
+            }
+
+              // .then((res: any) => {
+              //   console.log(res);
+              // });
           }}
         >
           {({
