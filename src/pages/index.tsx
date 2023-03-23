@@ -151,8 +151,11 @@ const IndexPage: React.FC<PageProps> = () => {
                 front: values.front,
                 back: values.back,
               });
-
-              store
+              setActiveStep(activeStep + 1);
+            } catch (e) {
+              console.error("Error adding document: ", e);
+            }
+            store
               .append("Sheet1", [
                 {
                   firstName: values.firstName,
@@ -161,20 +164,14 @@ const IndexPage: React.FC<PageProps> = () => {
                   phoneNumber: values.phoneNumber,
                   country: values.country,
                   visatype:values.visatype,
-                  photoGraph: JSON.stringify(values.photoGraph),
+                  photoGraph: values.photoGraph,
                   front: values.front,
                   back: values.back,
                 },
               ])
-
-              setActiveStep(activeStep + 1);
-            } catch (e) {
-              console.error("Error adding document: ", e);
-            }
-
-              // .then((res: any) => {
-              //   console.log(res);
-              // });
+              .then((res: any) => {
+                console.log(res);
+              });
           }}
         >
           {({
