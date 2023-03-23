@@ -164,7 +164,7 @@ const IndexPage: React.FC<PageProps> = () => {
                   phoneNumber: values.phoneNumber,
                   country: values.country,
                   visatype:values.visatype,
-                  photoGraph: values.photoGraph,
+                  photoGraph: JSON.stringify(values.photoGraph),
                   front: values.front,
                   back: values.back,
                 },
