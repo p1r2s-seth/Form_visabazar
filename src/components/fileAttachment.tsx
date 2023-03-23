@@ -62,7 +62,7 @@ const FileAttachment = ({
                   hidden
                   name="photoGraph"
                   id="photoGraph"
-                  accept="image/png"
+                  accept=".png, .jpeg, .jpg"
                   onChange={(e: any) => {
                     const fileReader = new FileReader();
                     fileReader.onload = () => {
@@ -117,7 +117,7 @@ const FileAttachment = ({
                   hidden
                   name="front"
                   id="front"
-                  accept="image/png"
+                  accept=".png, .jpeg, .jpg"
                   onChange={(e: any) => {
                     const fileReader = new FileReader();
                     fileReader.onload = () => {
@@ -169,7 +169,7 @@ const FileAttachment = ({
                   hidden
                   name="back"
                   id="back"
-                  accept="image/png"
+                  accept=".png, .jpeg, .jpg"
                   required
                   onChange={(e: any) => {
                     const fileReader = new FileReader();
