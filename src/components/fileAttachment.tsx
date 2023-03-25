@@ -8,6 +8,7 @@ import illustratintwo from "../images/two.svg";
 import photograph from "../images/photograph.jpeg";
 import frontImg from "../images/front.jpeg";
 import backImg from "../images/back.jpeg";
+import Compressor from "compressorjs";
 
 const style = {
   position: "absolute" as "absolute",
@@ -30,6 +31,26 @@ const FileAttachment = ({
   const [back, setBack] = useState(false);
   const [front, setFront] = useState(false);
   const [photo, setPhoto] = useState(false);
+
+  const handleFileChange = (e:any, field:any) => {
+    const file = e.target.files[0];
+    new Compressor(file, {
+      quality: 0.4, // set the image quality to 60%
+      maxWidth: 500, // set the maximum width of the image to 800px
+      success: (compressedFile:any) => {
+        const fileReader = new FileReader();
+        fileReader.onload = () => {
+          if (fileReader.readyState === 2) {
+            setFieldValue(field, fileReader.result);
+          }
+        };
+        fileReader.readAsDataURL(compressedFile);
+      },
+      error: (err:any) => {
+        console.log(err.message);
+      },
+    });
+  };
 
   return (
     <>
@@ -63,15 +84,7 @@ const FileAttachment = ({
                   name="photoGraph"
                   id="photoGraph"
                   accept="image/png"
-                  onChange={(e: any) => {
-                    const fileReader = new FileReader();
-                    fileReader.onload = () => {
-                      if (fileReader.readyState === 2) {
-                        setFieldValue("photoGraph", fileReader.result);
-                      }
-                    };
-                    fileReader.readAsDataURL(e.target.files[0]);
-                  }}
+                  onChange={(e: any) => handleFileChange(e, "photoGraph")}
                   type="file"
                 />
                 <span className="text-red-600">{errors.photoGraph}</span>
@@ -118,15 +131,7 @@ const FileAttachment = ({
                   name="front"
                   id="front"
                   accept="image/png"
-                  onChange={(e: any) => {
-                    const fileReader = new FileReader();
-                    fileReader.onload = () => {
-                      if (fileReader.readyState === 2) {
-                        setFieldValue("front", fileReader.result);
-                      }
-                    };
-                    fileReader.readAsDataURL(e.target.files[0]);
-                  }}
+                  onChange={(e: any) => handleFileChange(e, "front")}
                   type="file"
                 />
                 <span className="text-red-600">{errors.front}</span>
@@ -171,15 +176,7 @@ const FileAttachment = ({
                   id="back"
                   accept="image/png"
                   required
-                  onChange={(e: any) => {
-                    const fileReader = new FileReader();
-                    fileReader.onload = () => {
-                      if (fileReader.readyState === 2) {
-                        setFieldValue("back", fileReader.result);
-                      }
-                    };
-                    fileReader.readAsDataURL(e.target.files[0]);
-                  }}
+                  onChange={(e: any) => handleFileChange(e, "back")}
                   type="file"
                 />
                 <span className="text-red-600">{errors.back}</span>
