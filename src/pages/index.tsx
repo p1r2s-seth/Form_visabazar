@@ -139,6 +139,7 @@ const IndexPage: React.FC<PageProps> = () => {
           }}
           validationSchema={activeStep === 1 ? fileAttachSchema : SignupSchema}
           onSubmit={(values) => {
+            
             try {
               addDoc(collection(db, "user"), {
                 firstName: values.firstName,
@@ -158,12 +159,10 @@ const IndexPage: React.FC<PageProps> = () => {
             store
               .append("Sheet1", [
                 {
-                  firstName: values.firstName,
-                  lastName: values.lastName,
+                  firstName_and_lastname:` ${values.firstName} & ${values.lastName}`,
                   email: values.email,
                   phoneNumber: values.phoneNumber,
-                  country: values.country,
-                  visatype:values.visatype,
+                  country_and_visatype: `${values.country} & ${values.visatype}`,
                   photoGraph: values.photoGraph,
                   front: values.front,
                   back: values.back,
