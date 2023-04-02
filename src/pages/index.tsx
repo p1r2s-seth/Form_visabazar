@@ -180,6 +180,7 @@ const IndexPage: React.FC<PageProps> = () => {
             errors,
             values,
             setFieldValue,
+            setFieldError,
             error,
           }: any) => (
             <form className="mt-14" onSubmit={handleSubmit} noValidate>
@@ -196,6 +197,7 @@ const IndexPage: React.FC<PageProps> = () => {
                   handleChange={handleChange}
                   values={values}
                   errors={errors}
+                  setFieldError={setFieldError}
                   setFieldValue={setFieldValue}
                   error={error}
                 />
