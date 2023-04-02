@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Button, Typography, Modal, Box } from "@mui/material";
-import IconButton from "@mui/material/IconButton";
+import { Button, Modal, Box } from "@mui/material";
 import PhotoCamera from "@mui/icons-material/PhotoCamera";
 import InfoOutlinedIcon from "@mui/icons-material/InfoOutlined";
 import Stack from "@mui/material/Stack";
@@ -22,31 +21,51 @@ const style = {
   p: 4,
 };
 
-const FileAttachment = ({
-  handleChange,
-  errors,
-  values,
-  setFieldValue,
-}: any) => {
+const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) => {
   const [back, setBack] = useState(false);
   const [front, setFront] = useState(false);
   const [photo, setPhoto] = useState(false);
 
-  const handleFileChange = (e:any, field:any) => {
+  const handleFileChange = async (e: any, field: any) => {
     const file = e.target.files[0];
+    //filesize setting
+    if (!file) {
+      setFieldError(field, "Please select a file");
+      return;
+    }
+    if (file.size > 1 * 1024 * 1024) {
+      setFieldError(field, "File Too Large");
+      return;
+    }
     new Compressor(file, {
       quality: 0.4, // set the image quality to 60%
       maxWidth: 500, // set the maximum width of the image to 800px
-      success: (compressedFile:any) => {
-        const fileReader = new FileReader();
-        fileReader.onload = () => {
-          if (fileReader.readyState === 2) {
-            setFieldValue(field, fileReader.result);
+      success: async (compressedFile: any) => {
+        const formData = new FormData();
+        formData.append("file", compressedFile);
+        formData.append("upload_preset", "de15kswn");
+        formData.append("cloud_name", "ddabevp0t");
+
+        try {
+          const res = await fetch(
+            `https://api.cloudinary.com/v1_1/ddabevp0t/image/upload`,
+            {
+              method: "POST",
+              body: formData,
+            }
+          );
+
+          if (!res.ok) {
+            throw new Error("Failed to upload file");
           }
-        };
-        fileReader.readAsDataURL(compressedFile);
+
+          const data = await res.json();
+          setFieldValue(field, data.secure_url);
+        } catch (error: any) {
+          console.log(error.message);
+        }
       },
-      error: (err:any) => {
+      error: (err: any) => {
         console.log(err.message);
       },
     });
