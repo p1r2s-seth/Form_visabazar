@@ -1,4 +1,5 @@
 import type { GatsbyConfig } from "gatsby";
+import deepmerge from "deepmerge";
 
 const config: GatsbyConfig = {
   siteMetadata: {
@@ -25,5 +26,7 @@ const config: GatsbyConfig = {
     },
   ],
 };
-
-export default config;
+const myOtherConfig = {
+  // ...
+};
+export default deepmerge(myOtherConfig,config);

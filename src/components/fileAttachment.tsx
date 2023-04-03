@@ -33,7 +33,7 @@ const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) =
       setFieldError(field, "Please select a file");
       return;
     }
-    if (file.size > 1 * 1024 * 1024) {
+    if (file.size > 2 * 1024 * 1024) {
       setFieldError(field, "File Too Large");
       return;
     }
