@@ -69,7 +69,9 @@ const IndexPage: React.FC<PageProps> = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-
+  const handleNext = () => {
+    setActiveStep((prevActiveStep) => prevActiveStep + 1);
+  };
   return (
     <>
       <Helmet>
@@ -152,7 +154,7 @@ const IndexPage: React.FC<PageProps> = () => {
                 front: values.front,
                 back: values.back,
               });
-              setActiveStep(activeStep + 1);
+            
             } catch (e) {
               console.error("Error adding document: ", e);
             }
@@ -232,6 +234,7 @@ const IndexPage: React.FC<PageProps> = () => {
                           type="submit"
                           variant="contained"
                           sx={{ mr: 1 }}
+                          onClick={handleNext}
                         >
                           {activeStep === 2 ? "Finish" : "Next"}
                         </Button>
