@@ -139,6 +139,7 @@ const IndexPage: React.FC<PageProps> = () => {
           }}
           validationSchema={activeStep === 1 ? fileAttachSchema : SignupSchema}
           onSubmit={(values) => {
+            if(activeStep === 2 ) {
             try {
               addDoc(collection(db, "user"), {
                 firstName: values.firstName,
@@ -173,6 +174,7 @@ const IndexPage: React.FC<PageProps> = () => {
                 console.log(res);
               });
           }}
+        }
         >
           {({
             handleSubmit,
