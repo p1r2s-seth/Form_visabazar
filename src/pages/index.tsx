@@ -69,9 +69,7 @@ const IndexPage: React.FC<PageProps> = () => {
   const handleBack = () => {
     setActiveStep((prevActiveStep) => prevActiveStep - 1);
   };
-  const handleNext = () => {
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
+
   return (
     <>
       <Helmet>
@@ -141,6 +139,7 @@ const IndexPage: React.FC<PageProps> = () => {
           }}
           validationSchema={activeStep === 1 ? fileAttachSchema : SignupSchema}
           onSubmit={(values) => {
+          
             if(activeStep === 2 ) {
             try {
               addDoc(collection(db, "user"), {
@@ -175,7 +174,12 @@ const IndexPage: React.FC<PageProps> = () => {
               .then((res: any) => {
                 console.log(res);
               });
-          }}
+              setActiveStep(activeStep + 1);
+          }
+        else {
+          setActiveStep(activeStep + 1);
+        }
+        }
         }
         >
           {({
@@ -234,7 +238,6 @@ const IndexPage: React.FC<PageProps> = () => {
                           type="submit"
                           variant="contained"
                           sx={{ mr: 1 }}
-                          onClick={handleNext}
                         >
                           {activeStep === 2 ? "Finish" : "Next"}
                         </Button>
