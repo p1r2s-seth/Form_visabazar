@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -18,15 +18,29 @@ const style = {
   p: 4,
 };
 
-const PaypalPayment = ({ handleChange, errors }: any) => {
+const PaypalPayment = ({ handleChange, errors, fees }: any) => {
   const [open, setOpen] = useState(false);
   const [pay, setPay] = useState(false);
+  const [couponAmount, setCouponAmount] = useState(0);
+  const [discountedFees, setDiscountedFees] = useState(fees);
+
   const handlePay = () => setPay(true);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
     setPay(false);
   };
+
+  const applyCoupon = () => {
+    setDiscountedFees(fees - couponAmount);
+  };
+
+  useEffect(() => {
+    const amount = localStorage.getItem("applicants");
+    if (amount) {
+      setCouponAmount(JSON.parse(amount));
+    }
+  }, []);
 
   return (
     <>
@@ -36,7 +50,31 @@ const PaypalPayment = ({ handleChange, errors }: any) => {
           <PayPalScriptProvider options={{ "client-id": "test" }}>
             <PayPalButtons style={{ layout: "horizontal" }} />
           </PayPalScriptProvider> */}
-          <div>
+          <div className="drop-shadow-2xl bg-white rounded-md pt-4">
+            <div className="mb-6 ml-2">
+              <div className="flex space-x-8">
+                <span>{discountedFees !== fees ? "New Fee:" : "Fee:"}</span>
+                <span className="font-bold text-2xl">₹{discountedFees}</span>
+              </div>
+              {discountedFees == fees && (
+                <div className="flex space-x-4">
+                  <span>{`Save ₹${couponAmount} with this code`}</span>
+                  <span className="font-light text-[#92c8f7]">{`VISABAZAR${couponAmount}`}</span>
+                </div>
+              )}
+            </div>
+            <Button
+              type="button"
+              variant="contained"
+              onClick={applyCoupon}
+              disabled={discountedFees !== fees ? true : false}
+              fullWidth
+            >
+              {discountedFees !== fees ? "COUPON APPLIED" : "TAP TO APPLY"}
+            </Button>
+          </div>
+
+          <div className="mt-8">
             <Button
               variant="contained"
               style={{ background: "#FF6347" }}
@@ -111,4 +149,5 @@ const PaypalPayment = ({ handleChange, errors }: any) => {
     </>
   );
 };
+
 export default PaypalPayment;
