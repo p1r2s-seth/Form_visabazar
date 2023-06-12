@@ -62,7 +62,14 @@ const IndexPage: React.FC<PageProps> = () => {
       // Decode the data
       const decodedData = JSON.parse(atob(encodedData));
       setBasicData(decodedData);
+      localStorage.setItem("basicData", JSON.stringify(encodedData));
       navigate("/");
+    } else {
+      const storedData = localStorage.getItem("basicData");
+      if (storedData) {
+        const decodeStored = JSON.parse(atob(JSON.parse(storedData)));
+        setBasicData(decodeStored);
+      }
     }
   }, []);
 
@@ -136,51 +143,72 @@ const IndexPage: React.FC<PageProps> = () => {
             photoGraph: "",
             front: "",
             back: "",
+            numberOfApplicant: 250,
           }}
           validationSchema={activeStep === 1 ? fileAttachSchema : SignupSchema}
           onSubmit={(values) => {
-          
-            if(activeStep === 2 ) {
-            try {
-              addDoc(collection(db, "user"), {
-                firstName: values.firstName,
-                lastName: values.lastName,
-                email: values.email,
-                phoneNumber: values.phoneNumber,
-                country: values.country,
-                visatype:values.visatype,
-                photoGraph: values.photoGraph,
-                front: values.front,
-                back: values.back,
-              });
-            
-            } catch (e) {
-              console.error("Error adding document: ", e);
-            }
-            store
-              .append("Sheet1", [
-                {
+            console.log(activeStep);
+            if (activeStep === 0) {
+              localStorage.setItem(
+                "applicants",
+                JSON.stringify(values.numberOfApplicant)
+              );
+              try {
+                addDoc(collection(db, "user"), {
                   firstName: values.firstName,
                   lastName: values.lastName,
                   email: values.email,
                   phoneNumber: values.phoneNumber,
                   country: values.country,
-                  visatype:values.visatype,
+                  visatype: values.visatype,
+                  numberOfApplicant: values.numberOfApplicant,
+                });
+              } catch (e) {
+                console.error("Error adding document: ", e);
+              }
+              store
+                .append("Sheet1", [
+                  {
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    email: values.email,
+                    phoneNumber: values.phoneNumber,
+                    country: values.country,
+                    visatype: values.visatype,
+                  },
+                ])
+                .then((res: any) => {
+                  console.log(res);
+                });
+              console.log(values.numberOfApplicant);
+              setActiveStep(activeStep + 1);
+            } else if (activeStep === 2) {
+              localStorage.clear();
+              try {
+                addDoc(collection(db, "user"), {
                   photoGraph: values.photoGraph,
                   front: values.front,
                   back: values.back,
-                },
-              ])
-              .then((res: any) => {
-                console.log(res);
-              });
+                });
+              } catch (e) {
+                console.error("Error adding document: ", e);
+              }
+              store
+                .append("Sheet1", [
+                  {
+                    photoGraph: values.photoGraph,
+                    front: values.front,
+                    back: values.back,
+                  },
+                ])
+                .then((res: any) => {
+                  console.log(res);
+                });
               setActiveStep(activeStep + 1);
-          }
-        else {
-          setActiveStep(activeStep + 1);
-        }
-        }
-        }
+            } else {
+              setActiveStep(activeStep + 1);
+            }
+          }}
         >
           {({
             handleSubmit,
@@ -212,6 +240,7 @@ const IndexPage: React.FC<PageProps> = () => {
               )}
               {activeStep === 2 && (
                 <PaypalPayment
+                  fees={basicdata?.fees}
                   handleChange={handleChange}
                   errors={errors}
                   error={error}

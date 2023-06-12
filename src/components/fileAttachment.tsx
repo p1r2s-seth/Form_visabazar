@@ -21,7 +21,12 @@ const style = {
   p: 4,
 };
 
-const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) => {
+const FileAttachment = ({
+  errors,
+  values,
+  setFieldValue,
+  setFieldError,
+}: any) => {
   const [back, setBack] = useState(false);
   const [front, setFront] = useState(false);
   const [photo, setPhoto] = useState(false);
@@ -74,7 +79,11 @@ const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) =
   return (
     <>
       <div className="w-full block lg:grid grid-cols-2 gap-10">
-        <div className=" h-96  flex flex-col space-y-4">
+        <div className=" h-96 mt-4  flex flex-col space-y-4">
+          <div className="text-center text-gray-500 text-sm">
+            Please upload passport and photograph for primary visa applicant For
+            other visa applicants email documents to support@visabazar.com
+          </div>
           <div>
             <div className="flex space-x-4">
               <h1>Digital Photograph:</h1>
@@ -102,10 +111,11 @@ const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) =
                   hidden
                   name="photoGraph"
                   id="photoGraph"
-                  accept="image/png"
+                  accept="image/jpeg, image/png"
                   onChange={(e: any) => handleFileChange(e, "photoGraph")}
                   type="file"
                 />
+
                 <span className="text-red-600">{errors.photoGraph}</span>
                 {values.photoGraph && <img src={values.photoGraph} />}
               </Button>
@@ -149,7 +159,7 @@ const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) =
                   hidden
                   name="front"
                   id="front"
-                  accept="image/png"
+                  accept="image/jpeg, image/png"
                   onChange={(e: any) => handleFileChange(e, "front")}
                   type="file"
                 />
@@ -193,7 +203,7 @@ const FileAttachment = ({ errors, values, setFieldValue, setFieldError }: any) =
                   hidden
                   name="back"
                   id="back"
-                  accept="image/png"
+                  accept="image/jpeg, image/png"
                   required
                   onChange={(e: any) => handleFileChange(e, "back")}
                   type="file"
