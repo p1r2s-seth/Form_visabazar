@@ -18,11 +18,12 @@ const style = {
   p: 4,
 };
 
-const PaypalPayment = ({ handleChange, errors, fees }: any) => {
+const PaypalPayment = ({ handleChange, errors, fees, step }: any) => {
   const [open, setOpen] = useState(false);
   const [pay, setPay] = useState(false);
   const [couponAmount, setCouponAmount] = useState(0);
-  const [discountedFees, setDiscountedFees] = useState(fees);
+  const [discountedFees, setDiscountedFees] = useState(0);
+  const [couponApplied, setCouponApplied] = useState(false);
 
   const handlePay = () => setPay(true);
   const handleOpen = () => setOpen(true);
@@ -32,13 +33,32 @@ const PaypalPayment = ({ handleChange, errors, fees }: any) => {
   };
 
   const applyCoupon = () => {
-    setDiscountedFees(fees - couponAmount);
+    const newDiscountedFees = discountedFees - couponAmount;
+    setDiscountedFees(newDiscountedFees);
+    setCouponApplied(true);
+    localStorage.setItem("DISCOUNTFEES", JSON.stringify(newDiscountedFees));
   };
-
   useEffect(() => {
     const amount = localStorage.getItem("applicants");
+    localStorage.setItem("DISCOUNTFEES", JSON.stringify(fees));
     if (amount) {
-      setCouponAmount(JSON.parse(amount));
+      const parsedAmount = parseInt(amount);
+      let couponAmount = 0; // Default value of 0
+
+      if (parsedAmount === 1) {
+        couponAmount = 250;
+      } else if (parsedAmount === 2) {
+        couponAmount = 500;
+      } else if (parsedAmount >= 3 && parsedAmount <= 5) {
+        couponAmount = 1000;
+      } else if (parsedAmount >= 6 && parsedAmount <= 9) {
+        couponAmount = 2000;
+      } else if (parsedAmount === 10) {
+        couponAmount = 3000;
+      }
+
+      setCouponAmount(couponAmount);
+      setDiscountedFees(fees * parsedAmount);
     }
   }, []);
 
@@ -67,10 +87,10 @@ const PaypalPayment = ({ handleChange, errors, fees }: any) => {
               type="button"
               variant="contained"
               onClick={applyCoupon}
-              disabled={discountedFees !== fees ? true : false}
               fullWidth
+              disabled={couponApplied}
             >
-              {discountedFees !== fees ? "COUPON APPLIED" : "TAP TO APPLY"}
+              {couponApplied ? "COUPON APPLIED" : "TAP TO APPLY"}
             </Button>
           </div>
 
