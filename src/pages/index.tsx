@@ -143,7 +143,7 @@ const IndexPage: React.FC<PageProps> = () => {
             photoGraph: "",
             front: "",
             back: "",
-            numberOfApplicant: 250,
+            numberOfApplicant: 1,
           }}
           validationSchema={activeStep === 1 ? fileAttachSchema : SignupSchema}
           onSubmit={(values) => {
@@ -180,12 +180,17 @@ const IndexPage: React.FC<PageProps> = () => {
                 .then((res: any) => {
                   console.log(res);
                 });
-              console.log(values.numberOfApplicant);
+
               setActiveStep(activeStep + 1);
             } else if (activeStep === 2) {
-              localStorage.clear();
+              const storedDiscountedFees = localStorage.getItem("DISCOUNTFEES");
+              const initialDiscountedFees = storedDiscountedFees
+                ? JSON.parse(storedDiscountedFees)
+                : 0;
+
               try {
                 addDoc(collection(db, "user"), {
+                  fees: initialDiscountedFees,
                   photoGraph: values.photoGraph,
                   front: values.front,
                   back: values.back,
@@ -199,6 +204,7 @@ const IndexPage: React.FC<PageProps> = () => {
                     photoGraph: values.photoGraph,
                     front: values.front,
                     back: values.back,
+                    fees: initialDiscountedFees,
                   },
                 ])
                 .then((res: any) => {
@@ -244,6 +250,7 @@ const IndexPage: React.FC<PageProps> = () => {
                   handleChange={handleChange}
                   errors={errors}
                   error={error}
+                  step={activeStep}
                 />
               )}
               {activeStep > 2 && <CompletedForm />}

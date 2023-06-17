@@ -100,11 +100,16 @@ const PersonalInfo = ({ handleChange, errors, values, setFieldValue }: any) => {
               label="Age"
               onChange={applicantsChange}
             >
-              <MenuItem value={250}>1 applicant </MenuItem>
-              <MenuItem value={500}>2 applicants</MenuItem>
-              <MenuItem value={1000}>3 - 5 applicants</MenuItem>
-              <MenuItem value={2000}>6 - 9 applicants</MenuItem>
-              <MenuItem value={3000}>10 or more applicants</MenuItem>
+              <MenuItem value={1}>1 applicant </MenuItem>
+              <MenuItem value={2}>2 applicants</MenuItem>
+              <MenuItem value={3}>3 applicants</MenuItem>
+              <MenuItem value={4}>4 applicants</MenuItem>
+              <MenuItem value={5}>5 applicants</MenuItem>
+              <MenuItem value={6}>6 applicants</MenuItem>
+              <MenuItem value={7}>7 applicants</MenuItem>
+              <MenuItem value={8}>8 applicants</MenuItem>
+              <MenuItem value={9}>9 applicants</MenuItem>
+              <MenuItem value={10}>10 applicants</MenuItem>
             </Select>
           </FormControl>
         </div>
