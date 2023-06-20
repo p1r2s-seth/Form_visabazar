@@ -97,7 +97,7 @@ const PersonalInfo = ({ handleChange, errors, values, setFieldValue }: any) => {
               labelId="demo-simple-select-label"
               id="demo-simple-select"
               value={values.numberOfApplicant}
-              label="Age"
+              label="Number Of Applicants"
               onChange={applicantsChange}
             >
               <MenuItem value={1}>1 applicant </MenuItem>
