@@ -175,6 +175,7 @@ const IndexPage: React.FC<PageProps> = () => {
                     phoneNumber: values.phoneNumber,
                     country: values.country,
                     visatype: values.visatype,
+                    numberOfApplicant: values.numberOfApplicant,
                   },
                 ])
                 .then((res: any) => {
