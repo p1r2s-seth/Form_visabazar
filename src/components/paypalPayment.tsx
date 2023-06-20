@@ -73,10 +73,10 @@ const PaypalPayment = ({ handleChange, errors, fees, step }: any) => {
           <div className="drop-shadow-2xl bg-white rounded-md pt-4">
             <div className="mb-6 ml-2">
               <div className="flex space-x-8">
-                <span>{discountedFees !== fees ? "New Fee:" : "Fee:"}</span>
+                <span>{couponApplied ? "New Fee:" : "Fee:"}</span>
                 <span className="font-bold text-2xl">₹{discountedFees}</span>
               </div>
-              {discountedFees == fees && (
+              {!couponApplied && (
                 <div className="flex space-x-4">
                   <span>{`Save ₹${couponAmount} with this code`}</span>
                   <span className="font-light text-[#92c8f7]">{`VISABAZAR${couponAmount}`}</span>
