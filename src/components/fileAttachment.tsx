@@ -82,7 +82,7 @@ const FileAttachment = ({
         <div className=" h-96 mt-4  flex flex-col space-y-4">
           <div className="text-center text-gray-500 text-sm">
             Please upload passport and photograph for primary visa applicant For
-            other visa applicants email documents to support@visabazar.com
+            other visa applicants. email documents to support@visabazar.com
           </div>
           <div>
             <div className="flex space-x-4">

@@ -124,7 +124,7 @@ const PaypalPayment = ({ handleChange, errors, fees, step }: any) => {
               fullWidth
             >
               {" "}
-              Bank Transfer
+              Pay Later
             </Button>
             <Modal
               open={open}
